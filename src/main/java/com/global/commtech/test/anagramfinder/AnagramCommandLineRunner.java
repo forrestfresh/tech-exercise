@@ -1,23 +1,21 @@
 package com.global.commtech.test.anagramfinder;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.global.commtech.test.anagramfinder.anagram.AnagramIdentifier;
+import com.global.commtech.test.anagramfinder.anagram.StringLengthBatchSplitter;
+import com.global.commtech.test.anagramfinder.consumers.JoinAndPrintConsumer;
+import com.global.commtech.test.anagramfinder.producers.FileReaderBatchProducer;
+import com.global.commtech.test.anagramfinder.transformers.ChunkTransformer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 @Component
 public class AnagramCommandLineRunner implements CommandLineRunner {
-
-    private final AnagramResolver resolver;
-
-    public AnagramCommandLineRunner(@Qualifier("tree") AnagramResolver resolver) {
-        this.resolver = resolver;
-    }
 
     @Override
     public void run(final String... args) {
@@ -27,10 +25,17 @@ public class AnagramCommandLineRunner implements CommandLineRunner {
         Assert.isTrue(Files.exists(path), String.format("%s Does not exist", path));
 
         try {
-            resolver.resolve(path);
-        } catch (IOException exception) {
+            Producer<Path> anagramProducer = createProducer();
+            anagramProducer.produce(path);
+        } catch (Exception exception) {
             throw new RuntimeException("Application failed to run", exception);
         }
+    }
+
+    private Producer<Path> createProducer() {
+        Consumer<List<String>> printConsumer = new JoinAndPrintConsumer();
+        Transformer<List<String>> chunkConsumer = new ChunkTransformer(new AnagramIdentifier(), printConsumer);
+        return new FileReaderBatchProducer(new StringLengthBatchSplitter(), chunkConsumer);
     }
 
 }
