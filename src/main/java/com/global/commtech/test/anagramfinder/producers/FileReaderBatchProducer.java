@@ -10,7 +10,9 @@ import java.util.function.BiPredicate;
 
 import com.global.commtech.test.anagramfinder.Consumer;
 import com.global.commtech.test.anagramfinder.Producer;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public final class FileReaderBatchProducer implements Producer<Path> {
 
     private final BiPredicate<String, String> batchSplitter;
@@ -47,6 +49,10 @@ public final class FileReaderBatchProducer implements Producer<Path> {
 
     private void consumeBatch(List<String> batch) {
         if (!batch.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("New batch of size {}", batch.size());
+            }
+
             // process the remaining batch
             consumer.consume(new ArrayList<>(batch));
             batch.clear();

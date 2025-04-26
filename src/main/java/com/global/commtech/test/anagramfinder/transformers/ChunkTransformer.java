@@ -9,7 +9,9 @@ import java.util.function.Function;
 
 import com.global.commtech.test.anagramfinder.Consumer;
 import com.global.commtech.test.anagramfinder.Transformer;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public final class ChunkTransformer implements Transformer<List<String>> {
 
     private final Function<String, String> chunkIdentifier;
@@ -24,7 +26,15 @@ public final class ChunkTransformer implements Transformer<List<String>> {
     public void transform(List<String> input) {
         Map<String, List<String>> chunks = input.stream()
                 .collect(groupingBy(chunkIdentifier, toList()));
-        chunks.values().forEach(consumer::consume);
+        chunks.values().forEach(this::consumeChunk);
+    }
+
+    private void consumeChunk(List<String> chunk) {
+        if (log.isDebugEnabled()) {
+            log.debug("New chunk of size {}", chunk.size());
+        }
+
+        consumer.consume(chunk);
     }
 
 }
