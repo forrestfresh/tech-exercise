@@ -1,8 +1,6 @@
 package com.global.commtech.test.anagramfinder.producers;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,38 +21,37 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class FileReaderBatchProducer extends ConsumerWriter<List<String>> implements Producer<Path> {
 
-    private final Path dataFile;
+    private final DataSource source;
     private final BiPredicate<String, String> batchSplitter;
 
     /**
      * Constructor to initialise a new batch producer.
      *
      * @param consumer consumer of the produced data batches
-     * @param dataFile the data file that is expected to exist
+     * @param source the data file that is expected to exist
      * @param batchSplitter batch splitter used to determine a new batch
      */
-    public FileReaderBatchProducer(Consumer<List<String>> consumer, Path dataFile,
+    public FileReaderBatchProducer(Consumer<List<String>> consumer, DataSource source,
             BiPredicate<String, String> batchSplitter) {
         super(consumer);
-        this.dataFile = dataFile;
+        this.source = source;
         this.batchSplitter = batchSplitter;
     }
 
     @Override
     public void produce() throws ProcessingException {
-        try (BufferedReader reader = Files.newBufferedReader(dataFile)) {
+        try (DataSource.Reader reader = source.getReader()) {
             processInBatches(reader);
         } catch (IOException ioE) {
-            throw new ProcessingException("Error whilst reading data from the input file", ioE);
+            throw new ProcessingException("Error whilst reading data from the data source", ioE);
         }
     }
 
-    private void processInBatches(BufferedReader reader) throws IOException {
+    private void processInBatches(DataSource.Reader reader) throws IOException {
         String currentLine, firstBatchLine = null;
         List<String> batch = new ArrayList<>();
 
-        while ((currentLine = reader.readLine()) != null) {
-
+        while ((currentLine = reader.next()) != null) {
             if (firstBatchLine == null || batchSplitter.test(currentLine, firstBatchLine)) {
                 firstBatchLine = currentLine;
                 consumeBatch(batch);

@@ -8,9 +8,11 @@ import java.util.List;
 import com.global.commtech.test.anagramfinder.anagram.AnagramBatchSplitter;
 import com.global.commtech.test.anagramfinder.anagram.AnagramIdentifier;
 import com.global.commtech.test.anagramfinder.api.Consumer;
+import com.global.commtech.test.anagramfinder.api.ProcessingException;
 import com.global.commtech.test.anagramfinder.api.Producer;
 import com.global.commtech.test.anagramfinder.api.Transformer;
 import com.global.commtech.test.anagramfinder.consumers.JoinAndPrintConsumer;
+import com.global.commtech.test.anagramfinder.producers.DataFileSource;
 import com.global.commtech.test.anagramfinder.producers.FileReaderBatchProducer;
 import com.global.commtech.test.anagramfinder.transformers.ChunkTransformer;
 import org.springframework.boot.CommandLineRunner;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 @Component
-public class AnagramCommandLineRunner implements CommandLineRunner {
+public final class AnagramCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(final String... args) {
@@ -29,15 +31,15 @@ public class AnagramCommandLineRunner implements CommandLineRunner {
 
         try {
             createProducer(path).produce();
-        } catch (Exception exception) {
-            throw new RuntimeException("Application failed to run", exception);
+        } catch (ProcessingException pE) {
+            throw new RuntimeException("Application failed to run", pE);
         }
     }
 
     private Producer<Path> createProducer(Path path) {
-        Consumer<List<String>> printConsumer = new JoinAndPrintConsumer();
+        Consumer<List<String>> printConsumer = new JoinAndPrintConsumer(System.out::println);
         Transformer<List<String>> chunkConsumer = new ChunkTransformer(printConsumer, new AnagramIdentifier());
-        return new FileReaderBatchProducer(chunkConsumer, path, new AnagramBatchSplitter());
+        return new FileReaderBatchProducer(chunkConsumer, new DataFileSource(path), new AnagramBatchSplitter());
     }
 
 }
