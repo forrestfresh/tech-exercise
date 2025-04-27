@@ -1,6 +1,6 @@
 package com.global.commtech.test.anagramfinder.transformers;
 
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.groupingByConcurrent;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -36,8 +36,8 @@ public final class ChunkTransformer extends ConsumerWriter<List<String>> impleme
 
     @Override
     public void transform(List<String> data) {
-        Map<String, List<String>> chunks = data.stream()
-                .collect(groupingBy(chunkIdentifier, toList()));
+        Map<String, List<String>> chunks = data.parallelStream()
+                .collect(groupingByConcurrent(chunkIdentifier, toList()));
         chunks.values().forEach(this::consumeChunk);
     }
 
