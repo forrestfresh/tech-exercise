@@ -3,28 +3,40 @@ package com.global.commtech.test.anagramfinder.transformers;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.global.commtech.test.anagramfinder.Consumer;
-import com.global.commtech.test.anagramfinder.Transformer;
+import com.global.commtech.test.anagramfinder.api.Consumer;
+import com.global.commtech.test.anagramfinder.api.ConsumerWriter;
+import com.global.commtech.test.anagramfinder.api.Transformer;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Responsible for chunking the data; creating smaller batches from the data set. The chunks are determined by a
+ * chunk identifier {@link Function}. This function produces the common property that groups and identifiers a set of
+ * data; a chunk.
+ */
 @Slf4j
-public final class ChunkTransformer implements Transformer<List<String>> {
+public final class ChunkTransformer extends ConsumerWriter<List<String>> implements Transformer<List<String>> {
 
     private final Function<String, String> chunkIdentifier;
-    private final Consumer<List<String>> consumer;
 
-    public ChunkTransformer(Function<String, String> chunkIdentifier, Consumer<List<String>> consumer) {
+    /**
+     * Constructor to instantiate a new chunk transformer.
+     *
+     * @param consumer consumer of the produced chunks
+     * @param chunkIdentifier function to identify the common identifier that brings together a chunk
+     */
+    public ChunkTransformer(Consumer<List<String>> consumer, Function<String, String> chunkIdentifier) {
+        super(consumer);
         this.chunkIdentifier = chunkIdentifier;
-        this.consumer = consumer;
     }
 
     @Override
-    public void transform(List<String> input) {
-        Map<String, List<String>> chunks = input.stream()
+    public void transform(List<String> data) {
+        Map<String, List<String>> chunks = data.stream()
                 .collect(groupingBy(chunkIdentifier, toList()));
         chunks.values().forEach(this::consumeChunk);
     }
@@ -34,7 +46,7 @@ public final class ChunkTransformer implements Transformer<List<String>> {
             log.debug("New chunk of size {}", chunk.size());
         }
 
-        consumer.consume(chunk);
+        write(new ArrayList<>(chunk));
     }
 
 }

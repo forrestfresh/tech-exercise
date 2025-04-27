@@ -5,8 +5,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import com.global.commtech.test.anagramfinder.anagram.AnagramBatchSplitter;
 import com.global.commtech.test.anagramfinder.anagram.AnagramIdentifier;
-import com.global.commtech.test.anagramfinder.anagram.StringLengthBatchSplitter;
+import com.global.commtech.test.anagramfinder.api.Consumer;
+import com.global.commtech.test.anagramfinder.api.Producer;
+import com.global.commtech.test.anagramfinder.api.Transformer;
 import com.global.commtech.test.anagramfinder.consumers.JoinAndPrintConsumer;
 import com.global.commtech.test.anagramfinder.producers.FileReaderBatchProducer;
 import com.global.commtech.test.anagramfinder.transformers.ChunkTransformer;
@@ -25,17 +28,16 @@ public class AnagramCommandLineRunner implements CommandLineRunner {
         Assert.isTrue(Files.exists(path), String.format("%s Does not exist", path));
 
         try {
-            Producer<Path> anagramProducer = createProducer();
-            anagramProducer.produce(path);
+            createProducer(path).produce();
         } catch (Exception exception) {
             throw new RuntimeException("Application failed to run", exception);
         }
     }
 
-    private Producer<Path> createProducer() {
+    private Producer<Path> createProducer(Path path) {
         Consumer<List<String>> printConsumer = new JoinAndPrintConsumer();
-        Transformer<List<String>> chunkConsumer = new ChunkTransformer(new AnagramIdentifier(), printConsumer);
-        return new FileReaderBatchProducer(new StringLengthBatchSplitter(), chunkConsumer);
+        Transformer<List<String>> chunkConsumer = new ChunkTransformer(printConsumer, new AnagramIdentifier());
+        return new FileReaderBatchProducer(chunkConsumer, path, new AnagramBatchSplitter());
     }
 
 }

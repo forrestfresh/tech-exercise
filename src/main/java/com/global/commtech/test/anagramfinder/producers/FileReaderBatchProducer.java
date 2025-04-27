@@ -8,36 +8,55 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import com.global.commtech.test.anagramfinder.Consumer;
-import com.global.commtech.test.anagramfinder.Producer;
+import com.global.commtech.test.anagramfinder.api.Consumer;
+import com.global.commtech.test.anagramfinder.api.ConsumerWriter;
+import com.global.commtech.test.anagramfinder.api.ProcessingException;
+import com.global.commtech.test.anagramfinder.api.Producer;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Responsible for reading from a configured data file and batching the data to be consumed downstream.
+ * <p>
+ * Batches are determined by a {@link BiPredicate} batch splitter. It is expected that the passed file already exists;
+ * will result in {@link FileReaderBatchProducer#produce()} throwing a {@link ProcessingException} if it does not.
+ */
 @Slf4j
-public final class FileReaderBatchProducer implements Producer<Path> {
+public final class FileReaderBatchProducer extends ConsumerWriter<List<String>> implements Producer<Path> {
 
+    private final Path dataFile;
     private final BiPredicate<String, String> batchSplitter;
-    private final Consumer<List<String>> consumer;
 
-    public FileReaderBatchProducer(BiPredicate<String, String> batchSplitter, Consumer<List<String>> consumer) {
+    /**
+     * Constructor to initialise a new batch producer.
+     *
+     * @param consumer consumer of the produced data batches
+     * @param dataFile the data file that is expected to exist
+     * @param batchSplitter batch splitter used to determine a new batch
+     */
+    public FileReaderBatchProducer(Consumer<List<String>> consumer, Path dataFile,
+            BiPredicate<String, String> batchSplitter) {
+        super(consumer);
+        this.dataFile = dataFile;
         this.batchSplitter = batchSplitter;
-        this.consumer = consumer;
     }
 
     @Override
-    public void produce(Path textFilePath) throws Exception {
-        try (BufferedReader reader = Files.newBufferedReader(textFilePath)) {
+    public void produce() throws ProcessingException {
+        try (BufferedReader reader = Files.newBufferedReader(dataFile)) {
             processInBatches(reader);
+        } catch (IOException ioE) {
+            throw new ProcessingException("Error whilst reading data from the input file", ioE);
         }
     }
 
     private void processInBatches(BufferedReader reader) throws IOException {
-        String currentLine, batchStartLine = null;
+        String currentLine, firstBatchLine = null;
         List<String> batch = new ArrayList<>();
 
         while ((currentLine = reader.readLine()) != null) {
 
-            if (batchStartLine == null || batchSplitter.test(currentLine, batchStartLine)) {
-                batchStartLine = currentLine;
+            if (firstBatchLine == null || batchSplitter.test(currentLine, firstBatchLine)) {
+                firstBatchLine = currentLine;
                 consumeBatch(batch);
             }
 
@@ -54,7 +73,7 @@ public final class FileReaderBatchProducer implements Producer<Path> {
             }
 
             // process the remaining batch
-            consumer.consume(new ArrayList<>(batch));
+            write(new ArrayList<>(batch));
             batch.clear();
         }
     }

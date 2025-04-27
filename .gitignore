@@ -7,6 +7,7 @@
 *.iws
 *.iml
 *.ipr
+random_strings.txt
 
 ### Compiled ###
 build/
