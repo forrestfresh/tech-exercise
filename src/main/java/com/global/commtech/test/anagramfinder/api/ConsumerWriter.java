@@ -3,21 +3,21 @@ package com.global.commtech.test.anagramfinder.api;
 /**
  * Provides the means to write to a consumer.
  * <p>
- * To be extended by any implementation that is a writer of data to consumers, most notably {@link Producer} and
- * {@link Transformer}. Helps to remove the boilerplate code of making a consumer available.
+ * To be extended by any implementation that is a writer of data to consumers, most notably {@link DataProducer} and
+ * {@link DataTransformer}. Helps to remove the boilerplate code of making a consumer available.
  *
  * @param <T> the data type
  */
 public abstract class ConsumerWriter<T> {
 
-    private final Consumer<T> consumer;
+    private final DataConsumer<T> consumer;
 
     /**
      * Constructor for initialising consumer writers.
      *
      * @param consumer the consumer
      */
-    protected ConsumerWriter(Consumer<T> consumer) {
+    protected ConsumerWriter(DataConsumer<T> consumer) {
         this.consumer = consumer;
     }
 

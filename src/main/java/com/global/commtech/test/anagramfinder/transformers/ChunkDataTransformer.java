@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.global.commtech.test.anagramfinder.api.Consumer;
 import com.global.commtech.test.anagramfinder.api.ConsumerWriter;
-import com.global.commtech.test.anagramfinder.api.Transformer;
+import com.global.commtech.test.anagramfinder.api.DataConsumer;
+import com.global.commtech.test.anagramfinder.api.DataTransformer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  * data; a chunk.
  */
 @Slf4j
-public final class ChunkTransformer extends ConsumerWriter<List<String>> implements Transformer<List<String>> {
+public final class ChunkDataTransformer extends ConsumerWriter<List<String>> implements DataTransformer<List<String>> {
 
     private final Function<String, String> chunkIdentifier;
 
@@ -29,7 +29,7 @@ public final class ChunkTransformer extends ConsumerWriter<List<String>> impleme
      * @param consumer consumer of the produced chunks
      * @param chunkIdentifier function to identify the common identifier that brings together a chunk
      */
-    public ChunkTransformer(Consumer<List<String>> consumer, Function<String, String> chunkIdentifier) {
+    public ChunkDataTransformer(DataConsumer<List<String>> consumer, Function<String, String> chunkIdentifier) {
         super(consumer);
         this.chunkIdentifier = chunkIdentifier;
     }

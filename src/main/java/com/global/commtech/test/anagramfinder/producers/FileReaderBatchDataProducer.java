@@ -6,20 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import com.global.commtech.test.anagramfinder.api.Consumer;
+import com.global.commtech.test.anagramfinder.api.DataConsumer;
 import com.global.commtech.test.anagramfinder.api.ConsumerWriter;
 import com.global.commtech.test.anagramfinder.api.ProcessingException;
-import com.global.commtech.test.anagramfinder.api.Producer;
+import com.global.commtech.test.anagramfinder.api.DataProducer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Responsible for reading from a configured data file and batching the data to be consumed downstream.
  * <p>
  * Batches are determined by a {@link BiPredicate} batch splitter. It is expected that the passed file already exists;
- * will result in {@link FileReaderBatchProducer#produce()} throwing a {@link ProcessingException} if it does not.
+ * will result in {@link FileReaderBatchDataProducer#produce()} throwing a {@link ProcessingException} if it does not.
  */
 @Slf4j
-public final class FileReaderBatchProducer extends ConsumerWriter<List<String>> implements Producer<Path> {
+public final class FileReaderBatchDataProducer extends ConsumerWriter<List<String>> implements DataProducer<Path> {
 
     private final DataSource source;
     private final BiPredicate<String, String> batchSplitter;
@@ -31,7 +31,7 @@ public final class FileReaderBatchProducer extends ConsumerWriter<List<String>> 
      * @param source the data file that is expected to exist
      * @param batchSplitter batch splitter used to determine a new batch
      */
-    public FileReaderBatchProducer(Consumer<List<String>> consumer, DataSource source,
+    public FileReaderBatchDataProducer(DataConsumer<List<String>> consumer, DataSource source,
             BiPredicate<String, String> batchSplitter) {
         super(consumer);
         this.source = source;

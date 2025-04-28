@@ -5,7 +5,7 @@ package com.global.commtech.test.anagramfinder.api;
  *
  * @param <T> the data type
  */
-public interface Consumer<T> {
+public interface DataConsumer<T> {
 
     /**
      * Consumes the passed data.

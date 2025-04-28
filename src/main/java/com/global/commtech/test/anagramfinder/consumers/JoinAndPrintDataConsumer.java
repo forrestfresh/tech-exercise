@@ -2,13 +2,14 @@ package com.global.commtech.test.anagramfinder.consumers;
 
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
-import com.global.commtech.test.anagramfinder.api.Consumer;
+import com.global.commtech.test.anagramfinder.api.DataConsumer;
 
 /**
  * Simple join and print consumer, that joins the data with comma separation and writes out to the printer consumer.
  */
-public final class JoinAndPrintConsumer implements Consumer<List<String>> {
+public final class JoinAndPrintDataConsumer implements DataConsumer<List<String>> {
 
     private final Consumer<String> printer;
 
@@ -17,7 +18,7 @@ public final class JoinAndPrintConsumer implements Consumer<List<String>> {
      *
      * @param printer the printer
      */
-    public JoinAndPrintConsumer(Consumer<String> printer) {
+    public JoinAndPrintDataConsumer(Consumer<String> printer) {
         this.printer = printer;
     }
 
@@ -25,7 +26,7 @@ public final class JoinAndPrintConsumer implements Consumer<List<String>> {
     public void consume(List<String> data) {
         StringJoiner joiner = new StringJoiner(",");
         data.forEach(joiner::add);
-        printer.consume(joiner.toString());
+        printer.accept(joiner.toString());
     }
 
 }

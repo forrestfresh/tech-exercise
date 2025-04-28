@@ -7,14 +7,14 @@ import java.util.List;
 
 import com.global.commtech.test.anagramfinder.anagram.AnagramBatchSplitter;
 import com.global.commtech.test.anagramfinder.anagram.AnagramIdentifier;
-import com.global.commtech.test.anagramfinder.api.Consumer;
+import com.global.commtech.test.anagramfinder.api.DataConsumer;
+import com.global.commtech.test.anagramfinder.api.DataProducer;
+import com.global.commtech.test.anagramfinder.api.DataTransformer;
 import com.global.commtech.test.anagramfinder.api.ProcessingException;
-import com.global.commtech.test.anagramfinder.api.Producer;
-import com.global.commtech.test.anagramfinder.api.Transformer;
-import com.global.commtech.test.anagramfinder.consumers.JoinAndPrintConsumer;
+import com.global.commtech.test.anagramfinder.consumers.JoinAndPrintDataConsumer;
 import com.global.commtech.test.anagramfinder.producers.DataFileSource;
-import com.global.commtech.test.anagramfinder.producers.FileReaderBatchProducer;
-import com.global.commtech.test.anagramfinder.transformers.ChunkTransformer;
+import com.global.commtech.test.anagramfinder.producers.FileReaderBatchDataProducer;
+import com.global.commtech.test.anagramfinder.transformers.ChunkDataTransformer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -36,10 +36,10 @@ public final class AnagramCommandLineRunner implements CommandLineRunner {
         }
     }
 
-    private Producer<Path> createProducer(Path path) {
-        Consumer<List<String>> printConsumer = new JoinAndPrintConsumer(System.out::println);
-        Transformer<List<String>> chunkConsumer = new ChunkTransformer(printConsumer, new AnagramIdentifier());
-        return new FileReaderBatchProducer(chunkConsumer, new DataFileSource(path), new AnagramBatchSplitter());
+    private DataProducer<Path> createProducer(Path path) {
+        DataConsumer<List<String>> printConsumer = new JoinAndPrintDataConsumer(System.out::println);
+        DataTransformer<List<String>> chunkConsumer = new ChunkDataTransformer(printConsumer, new AnagramIdentifier());
+        return new FileReaderBatchDataProducer(chunkConsumer, new DataFileSource(path), new AnagramBatchSplitter());
     }
 
 }

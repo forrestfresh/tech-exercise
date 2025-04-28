@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import com.global.commtech.test.anagramfinder.api.Consumer;
+import com.global.commtech.test.anagramfinder.api.DataConsumer;
 import com.global.commtech.test.anagramfinder.api.ProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,10 +21,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class FileReaderBatchProducerTest {
+class FileReaderBatchDataProducerTest {
 
     @Mock
-    private Consumer<List<String>> consumer;
+    private DataConsumer<List<String>> consumer;
     @Mock
     private DataSource dataSource;
     @Mock
@@ -33,7 +33,7 @@ class FileReaderBatchProducerTest {
     private BiPredicate<String, String> splitter;
 
     @InjectMocks
-    private FileReaderBatchProducer producer;
+    private FileReaderBatchDataProducer producer;
 
     @BeforeEach
     void setUp() throws IOException {

@@ -1,6 +1,8 @@
 package com.global.commtech.test.anagramfinder.transformers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -8,23 +10,27 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.function.Function;
 
-import com.global.commtech.test.anagramfinder.api.Consumer;
+import com.global.commtech.test.anagramfinder.api.DataConsumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ChunkTransformerTest {
+class ChunkDataTransformerTest {
 
     @Mock
-    private Consumer<List<String>> consumer;
+    private DataConsumer<List<String>> consumer;
     @Mock
     private Function<String, String> chunkIdentifier;
+    @Captor
+    private ArgumentCaptor<List<String>> anagramCaptor;
 
     @InjectMocks
-    private ChunkTransformer transformer;
+    private ChunkDataTransformer transformer;
 
     @Test
     void shouldNotCallConsumerWhenNoDataProvided() {
@@ -57,7 +63,9 @@ class ChunkTransformerTest {
         transformer.transform(List.of("abc", "bca"));
 
         // then
-        verify(consumer).consume(eq(List.of("abc", "bca")));
+        verify(consumer).consume(anagramCaptor.capture());
+        assertThat(anagramCaptor.getAllValues()).hasSize(1);
+        assertThat(anagramCaptor.getValue()).containsExactlyInAnyOrder("abc", "bca");
     }
 
     @Test
@@ -71,8 +79,11 @@ class ChunkTransformerTest {
         transformer.transform(List.of("abc", "bca", "xyz"));
 
         // then
-        verify(consumer).consume(eq(List.of("abc", "bca")));
-        verify(consumer).consume(eq(List.of("xyz")));
+        verify(consumer, times(2)).consume(anagramCaptor.capture());
+        assertThat(anagramCaptor.getAllValues()).hasSize(2);
+        assertThat(anagramCaptor.getAllValues()).satisfiesExactlyInAnyOrder(
+                list -> assertThat(list).containsExactlyInAnyOrder("abc", "bca"),
+                list -> assertThat(list).containsExactlyInAnyOrder("xyz"));
     }
 
 }

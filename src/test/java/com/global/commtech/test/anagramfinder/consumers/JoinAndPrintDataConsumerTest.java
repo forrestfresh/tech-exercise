@@ -4,8 +4,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-import com.global.commtech.test.anagramfinder.api.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,13 +13,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class JoinAndPrintConsumerTest {
+class JoinAndPrintDataConsumerTest {
 
     @Mock
     private Consumer<String> mockPrinter;
 
     @InjectMocks
-    private JoinAndPrintConsumer consumer;
+    private JoinAndPrintDataConsumer consumer;
 
     @Test
     void shouldWriteOutToPrinterWhenConsumingData() {
@@ -27,7 +27,7 @@ class JoinAndPrintConsumerTest {
         consumer.consume(List.of("hello"));
 
         // then
-        verify(mockPrinter).consume(eq("hello"));
+        verify(mockPrinter).accept(eq("hello"));
     }
 
     @Test
@@ -39,7 +39,7 @@ class JoinAndPrintConsumerTest {
         consumer.consume(data);
 
         // then
-        verify(mockPrinter).consume(eq("abc,def,hij"));
+        verify(mockPrinter).accept(eq("abc,def,hij"));
     }
 
 }
