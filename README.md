@@ -72,5 +72,5 @@ controlled batching, such as configuring a batch size of 1000, rather than split
 
 Building on this further, utilising the producer/consumer approach, a queue based consumer implementation could be built
 along with multithreading, to allow for concurrent processing. This solution could allow for very large data sets and be
-much faster to process. With this map/reduce approach we could Big O reducing significantly, more in line with
+much faster to process. With this map/reduce approach we could see Big O reducing significantly, more in line with
 `O(log n)`.
