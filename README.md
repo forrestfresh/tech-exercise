@@ -50,13 +50,18 @@ Processing of the data is quite simple:
 1. each line of each batch is read and chunked into anagram groups
 1. each line of each anagram is read, joined and printed
 
-Based on this I was consider this to be `O(3n)`.
+Trying to reason with this, it is most definitely not `O(1)` or even `O(n)`. It's more along the lines of: `n x batch count x
+chunk count`. So it's more than `O(3n)` but considerably less than `O(n^3)`.
 
 ### Future ideas
 
 Some other examples can be found on the `more-time` branch. Most notable was an attempt to be more memory efficient by
 means of building out an in-memory tree model of all the indexes. This benefits by deduplicating characters and
-compressing the overall memory foot print.
+compressing the overall memory footprint. The memory footprint of the tree would be as wide as there are characters (26)
+and as deep as the longest word. This could very quickly consume a lot of memory with `1 + c + c^2 + c^3...`, so 
+`1 + 26+ 26^2 + 26^3...` and so forth. The hope here would be that the data inputted would reflect more real life 
+scenarios with real words, and therefore the breath of the tree would be smaller given the compression nature of the 
+tree.
 
 Though this worked it wasn't anymore memory efficient, though I believe this was likely due to a combination of the data
 set and my attempt to roll my own word handling within `SimpleCharBuffer`.
@@ -67,4 +72,5 @@ controlled batching, such as configuring a batch size of 1000, rather than split
 
 Building on this further, utilising the producer/consumer approach, a queue based consumer implementation could be built
 along with multithreading, to allow for concurrent processing. This solution could allow for very large data sets and be
-much faster to process. 
+much faster to process. With this map/reduce approach we could Big O reducing significantly, more in line with
+`O(log n)`.
