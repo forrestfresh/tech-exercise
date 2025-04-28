@@ -25,7 +25,9 @@ public final class JoinAndPrintDataConsumer implements DataConsumer<List<String>
     @Override
     public void consume(List<String> data) {
         StringJoiner joiner = new StringJoiner(",");
-        data.forEach(joiner::add);
+        data.stream()
+                .sorted() // order so output is deterministic
+                .forEach(joiner::add);
         printer.accept(joiner.toString());
     }
 

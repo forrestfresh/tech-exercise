@@ -83,7 +83,7 @@ class ChunkDataTransformerTest {
         assertThat(anagramCaptor.getAllValues()).hasSize(2);
         assertThat(anagramCaptor.getAllValues()).satisfiesExactlyInAnyOrder(
                 list -> assertThat(list).containsExactlyInAnyOrder("abc", "bca"),
-                list -> assertThat(list).containsExactlyInAnyOrder("xyz"));
+                list -> assertThat(list).containsExactly("xyz"));
     }
 
 }
