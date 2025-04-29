@@ -1,25 +1,22 @@
 package com.global.commtech.test.anagramfinder.producers;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import com.global.commtech.test.anagramfinder.api.DataConsumer;
 import com.global.commtech.test.anagramfinder.api.ConsumerWriter;
-import com.global.commtech.test.anagramfinder.api.ProcessingException;
+import com.global.commtech.test.anagramfinder.api.DataConsumer;
 import com.global.commtech.test.anagramfinder.api.DataProducer;
+import com.global.commtech.test.anagramfinder.api.ProcessingException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Responsible for reading from a configured data file and batching the data to be consumed downstream.
- * <p>
- * Batches are determined by a {@link BiPredicate} batch splitter. It is expected that the passed file already exists;
- * will result in {@link FileReaderBatchDataProducer#produce()} throwing a {@link ProcessingException} if it does not.
+ * Responsible for reading from a {@link DataSource} and batching the data to be consumed downstream. Batches are
+ * determined by a {@link BiPredicate} batch splitter.
  */
 @Slf4j
-public final class FileReaderBatchDataProducer extends ConsumerWriter<List<String>> implements DataProducer<Path> {
+public final class BatchDataProducer extends ConsumerWriter<List<String>> implements DataProducer {
 
     private final DataSource source;
     private final BiPredicate<String, String> batchSplitter;
@@ -28,10 +25,10 @@ public final class FileReaderBatchDataProducer extends ConsumerWriter<List<Strin
      * Constructor to initialise a new batch producer.
      *
      * @param consumer consumer of the produced data batches
-     * @param source the data file that is expected to exist
+     * @param source the data source to be read from
      * @param batchSplitter batch splitter used to determine a new batch
      */
-    public FileReaderBatchDataProducer(DataConsumer<List<String>> consumer, DataSource source,
+    public BatchDataProducer(DataConsumer<List<String>> consumer, DataSource source,
             BiPredicate<String, String> batchSplitter) {
         super(consumer);
         this.source = source;

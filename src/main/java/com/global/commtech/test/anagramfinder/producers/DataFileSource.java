@@ -29,13 +29,7 @@ public final class DataFileSource implements DataSource {
         return new FileReader(reader);
     }
 
-    private static final class FileReader implements Reader {
-
-        private final BufferedReader bufferedReader;
-
-        private FileReader(BufferedReader bufferedReader) {
-            this.bufferedReader = bufferedReader;
-        }
+    private record FileReader(BufferedReader bufferedReader) implements Reader {
 
         @Override
         public String next() throws IOException {

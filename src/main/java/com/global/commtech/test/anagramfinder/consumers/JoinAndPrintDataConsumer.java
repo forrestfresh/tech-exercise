@@ -8,6 +8,7 @@ import com.global.commtech.test.anagramfinder.api.DataConsumer;
 
 /**
  * Simple join and print consumer, that joins the data with comma separation and writes out to the printer consumer.
+ * The data is first sorted before being joined.
  */
 public final class JoinAndPrintDataConsumer implements DataConsumer<List<String>> {
 

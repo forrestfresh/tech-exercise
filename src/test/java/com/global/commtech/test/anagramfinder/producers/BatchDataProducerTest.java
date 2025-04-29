@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class FileReaderBatchDataProducerTest {
+class BatchDataProducerTest {
 
     @Mock
     private DataConsumer<List<String>> consumer;
@@ -33,7 +33,7 @@ class FileReaderBatchDataProducerTest {
     private BiPredicate<String, String> splitter;
 
     @InjectMocks
-    private FileReaderBatchDataProducer producer;
+    private BatchDataProducer producer;
 
     @BeforeEach
     void setUp() throws IOException {

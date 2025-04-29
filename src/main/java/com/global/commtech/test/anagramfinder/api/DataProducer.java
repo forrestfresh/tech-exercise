@@ -3,12 +3,10 @@ package com.global.commtech.test.anagramfinder.api;
 /**
  * Responsible for producing a stream of data.
  * <p>
- * To be used in conjunction with {@link DataConsumer}, where the consumer is responsible for processing the incoming stream
- * of data.
- *
- * @param <T> the data type
+ * To be used in conjunction with {@link DataConsumer}, where the consumer is responsible for processing the incoming
+ * stream of data.
  */
-public interface DataProducer<T> {
+public interface DataProducer {
 
     /**
      * Produces data.

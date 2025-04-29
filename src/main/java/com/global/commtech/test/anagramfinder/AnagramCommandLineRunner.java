@@ -12,8 +12,8 @@ import com.global.commtech.test.anagramfinder.api.DataProducer;
 import com.global.commtech.test.anagramfinder.api.DataTransformer;
 import com.global.commtech.test.anagramfinder.api.ProcessingException;
 import com.global.commtech.test.anagramfinder.consumers.JoinAndPrintDataConsumer;
+import com.global.commtech.test.anagramfinder.producers.BatchDataProducer;
 import com.global.commtech.test.anagramfinder.producers.DataFileSource;
-import com.global.commtech.test.anagramfinder.producers.FileReaderBatchDataProducer;
 import com.global.commtech.test.anagramfinder.transformers.ChunkDataTransformer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -36,10 +36,10 @@ public final class AnagramCommandLineRunner implements CommandLineRunner {
         }
     }
 
-    private DataProducer<Path> createProducer(Path path) {
+    private DataProducer createProducer(Path path) {
         DataConsumer<List<String>> printConsumer = new JoinAndPrintDataConsumer(System.out::println);
-        DataTransformer<List<String>> chunkConsumer = new ChunkDataTransformer(printConsumer, new AnagramIdentifier());
-        return new FileReaderBatchDataProducer(chunkConsumer, new DataFileSource(path), new AnagramBatchSplitter());
+        DataTransformer<List<String>> chunkTransformer = new ChunkDataTransformer(printConsumer, new AnagramIdentifier());
+        return new BatchDataProducer(chunkTransformer, new DataFileSource(path), new AnagramBatchSplitter());
     }
 
 }

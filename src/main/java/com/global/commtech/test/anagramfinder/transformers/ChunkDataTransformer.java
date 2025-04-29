@@ -17,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
  * Responsible for chunking the data; creating smaller batches from the data set. The chunks are determined by a
  * chunk identifier {@link Function}. This function produces the common property that groups and identifiers a set of
  * data; a chunk.
+ * <p>
+ * Note processing of the data is done concurrently to aid performance with large data sets. Therefore, the order of
+ * values within a chunk will not be deterministic.
  */
 @Slf4j
 public final class ChunkDataTransformer extends ConsumerWriter<List<String>> implements DataTransformer<List<String>> {
